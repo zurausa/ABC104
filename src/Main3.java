@@ -1,17 +1,39 @@
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-public class Main2 {
+public class Main3 {
 	public static void main(String[] args){
 		FastScanner sc = new FastScanner();
-		String S = sc.next();
-		Pattern p = Pattern.compile("^A[a-z]{1,}C[a-z]{1,}$");
-		Matcher m = p.matcher(S);
-		if(m.find()){
-			System.out.println("AC");
-		}else{
-			System.out.println("WA");
+		int D = sc.nextInt();
+		long G = sc.nextLong();
+		//問題数の管理
+		int[] probCnt = new int[D];
+		//全問正解時の得点
+		int[] perScore = new int[D];
+		for(int i=0;i<D;i++){
+			probCnt[i] = sc.nextInt();
+			perScore[i] = sc.nextInt() + ((i+1) * probCnt[i] * 100);
 		}
+		int minCount=Integer.MAX_VALUE;
+		//総当たりをbit配列で管理
+		for(int bit=0; bit < 1 << D;bit++){
+			int score = 0;
+			int count = 0;
+			for(int i=0;i<D;i++){
+				if((bit & (1 << i)) >0)continue;
+				score += perScore[i];
+				count += probCnt[i];
+			}
+			if(score<G){
+				for(int i=D-1;i>=0;i--){
+					if((bit & (1 << i)) ==0)continue;
+					for(int j=0;j<probCnt[i];j++){
+						if(score >= G) break;
+						score += (i+1) * 100;
+						count++;
+					}
+				}
+			}
+			minCount = Math.min(minCount, count);
+		}
+		System.out.println(minCount);
 	}
 }
 
